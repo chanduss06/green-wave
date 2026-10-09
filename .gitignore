@@ -1,0 +1,4 @@
+node_modules
+dist
+server/greenwave.db
+__pycache__
