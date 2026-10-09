@@ -46,11 +46,12 @@ export class Sim {
     if (!this.nodes.length) this.preset(1, 3);
   }
   loop = t => {
+    this.raf = requestAnimationFrame(this.loop); // schedule first so one error can never stop the animation
     const d = Math.min(0.1, (t - this.lt) / 1000); this.lt = t; this.acc += d * this.speed;
+    if (this.dirty) this.geomAll(); // road shapes must exist before the first draw
     let k = 0; while (this.acc >= 1 / 30 && k < 150) { this.step(1 / 30); this.acc -= 1 / 30; k++; }
     if (k >= 150) this.acc = 0;
-    draw(this, this.cx, this.W, this.H);
-    this.raf = requestAnimationFrame(this.loop);
+    try { draw(this, this.cx, this.W, this.H); } catch (e) { console.error(e); }
   };
   say(m) { this.msg = m; this.msgT = performance.now(); }
   log(m) { this.logs.unshift(m); this.logs.length = Math.min(this.logs.length, 6); }
